@@ -1,43 +1,92 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      /* General styling */
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f2f2f2;
+    }
+
+    form {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+
+    .title-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    h3 {
+      font-size: 2rem;
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 600px) {
       body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background-color: #f2f2f2;
+        padding: 10px;
       }
 
       form {
-        width: 100%;
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        box-sizing: border-box;
-      }
-
-      .title-container {
-        display: flex;
-      }
-
-      h3 {
-        font-size: 40px;
-        color: #4caf50;
+        padding: 15px;
       }
 
       label {
-        display: block;
-        margin-top: 40px;
-        font-weight: bold;
-        font-size: 16px;
+        font-size: 0.9rem;
       }
 
       input[type="text"],
@@ -45,249 +94,238 @@
       input[type="date"],
       input[type="time"],
       select {
-        width: 100%;
-        padding: 12px;
-        margin-top: 5px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 14px;
+        font-size: 0.9rem;
+        padding: 10px;
       }
 
       button {
-        width: 100%;
-        padding: 12px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 16px;
-        cursor: pointer;
-        margin-top: 20px;
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      label {
+        font-size: 0.8rem;
       }
 
-      button:hover {
-        background-color: #45a049;
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      input[type="time"],
+      select {
+        padding: 8px;
+        font-size: 0.8rem;
       }
 
-      /* Responsive adjustments for smaller screens */
-      @media (max-width: 600px) {
-        body {
-          padding: 10px;
-        }
-
-        form {
-          padding: 15px;
-        }
-
-        label {
-          font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="time"],
-        select {
-          padding: 10px;
-          font-size: 12px;
-        }
-
-        button {
-          font-size: 14px;
-          padding: 10px;
-        }
+      button {
+        font-size: 0.8rem;
+        padding: 8px;
       }
+    }
+  </style>
+</head>
+<body>
+  <div class="title-container">
+    <h3>Daily Log Entry Form</h3>
+  </div>
+  <form id="logForm">
+    <label>Serial No:</label>
+    <input type="text" name="serialNo" readonly />
 
-      /* Extra responsiveness for very small screens (e.g., phones under 400px width) */
-      @media (max-width: 400px) {
-        label {
-          font-size: 12px;
-        }
+    <label>Opening Date:</label>
+    <input type="date" name="openingDate" required onchange="populateWeekAndMonth()" />
 
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="time"],
-        select {
-          padding: 8px;
-          font-size: 12px;
-        }
+    <label>Week:</label>
+    <input type="text" name="week" readonly />
 
-        button {
-          font-size: 12px;
-          padding: 8px;
-        }
+    <label>Month:</label>
+    <input type="text" name="month" readonly />
+
+    <label>Depot Name:</label>
+    <select name="depotName" id="depotNameDropdown" required onchange="updateVehicleDropdown(this.value)">
+      <option value="">Select a Depot</option>
+      <option value="Bandra">Bandra</option>
+      <option value="Khar">Khar</option>
+      <option value="Santacruz">Santacruz</option>
+      <option value="Andheri">Andheri</option>
+      <option value="Jogeshwari">Jogeshwari</option>
+      <option value="Goregaon">Goregaon</option>
+      <option value="Malad">Malad</option>
+      <option value="Kandivali">Kandivali</option>
+      <option value="Borivali">Borivali</option>
+      <option value="Dahisar">Dahisar</option>
+      <option value="Sion">Sion</option>
+      <option value="Chembur">Chembur</option>
+      <option value="Kurla">Kurla</option>
+      <option value="Ghatkopar">Ghatkopar</option>
+      <option value="Vidyavihar">Vidyavihar</option>
+      <option value="Vikhroli">Vikhroli</option>
+      <option value="Bhandup">Bhandup</option>
+      <option value="Mulund">Mulund</option>
+      <option value="Powai">Powai</option>
+      <option value="Kanjurmarg">Kanjurmarg</option>
+      <option value="Thane">Thane</option>
+      <option value="Dadar">Dadar</option>
+      <option value="Wadala">Wadala</option>
+      <option value="Parel">Parel</option>
+      <option value="Lower Parel">Lower Parel</option>
+      <option value="Sewri">Sewri</option>
+      <option value="Byculla">Byculla</option>
+    </select>
+
+    <label>Vehicle No:</label>
+    <select name="vehicleNo" id="vehicleDropdown" required>
+      <option value="">Select a Vehicle</option>
+      <option value="MH01 AB 1234">MH01 AB 1234</option>
+      <option value="MH02 CD 5678">MH02 CD 5678</option>
+      <option value="MH03 EF 9101">MH03 EF 9101</option>
+      <option value="MH04 GH 2345">MH04 GH 2345</option>
+      <option value="MH05 IJ 6789">MH05 IJ 6789</option>
+      <option value="MH06 KL 1122">MH06 KL 1122</option>
+      <option value="MH07 MN 3344">MH07 MN 3344</option>
+      <option value="MH08 OP 5566">MH08 OP 5566</option>
+      <option value="MH09 QR 7788">MH09 QR 7788</option>
+      <option value="MH10 ST 9900">MH10 ST 9900</option>
+      <option value="MH12 UV 1235">MH12 UV 1235</option>
+      <option value="MH14 WX 5676">MH14 WX 5676</option>
+      <option value="MH15 YZ 9102">MH15 YZ 9102</option>
+      <option value="MH17 AA 4567">MH17 AA 4567</option>
+      <option value="MH20 BB 7890">MH20 BB 7890</option>
+    </select>
+
+    <label>Vehicle Reporting Time:</label>
+    <input type="time" name="reportingTime" required />
+
+    <label>ADBLUE / DEF Filled:</label>
+    <select name="adblueDef" onchange="toggleQuantityField(this, 'defLitresFilledQty')">
+      <option value="No" selected>No</option>
+      <option value="Yes">Yes</option>
+    </select>
+
+    <label>DEF Litres Filled Qty (L):</label>
+    <input type="number" name="defLitresFilledQty" id="defLitresFilledQty" disabled />
+
+    <label>ENGINE OIL Filled:</label>
+    <select name="engineOil" onchange="toggleQuantityField(this, 'engineOilQty')">
+      <option value="No" selected>No</option>
+      <option value="Yes">Yes</option>
+    </select>
+
+    <label>ENGINE OIL Filled Qty (L):</label>
+    <input type="number" name="engineOilQty" id="engineOilQty" disabled />
+
+    <label>COOLANT Filled:</label>
+    <select name="coolant" onchange="toggleQuantityField(this, 'coolantQty')">
+      <option value="No" selected>No</option>
+      <option value="Yes">Yes</option>
+    </select>
+
+    <label>COOLANT Filled Qty (L):</label>
+    <input type="number" name="coolantQty" id="coolantQty" disabled />
+
+    <label>Closing Date:</label>
+    <input type="date" name="closingDate" required />
+
+    <label>Closing KM Reading:</label>
+    <input type="number" name="closingKMReading" readonly />
+
+    <label>No of KMs Ran:</label>
+    <input type="number" name="kmsRan" readonly />
+
+    <label>Photograph of Refill Qty (Y/N):</label>
+    <select name="refillPhoto">
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <label>Driver / Depot Staff Name:</label>
+    <input type="text" name="driverName" required />
+
+    <label>Driver / Depot Staff Signature (Y/N):</label>
+    <select name="driverSignature">
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <label>Gulf Operator / Staff Signature (Y/N):</label>
+    <select name="gulfSignature">
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <button type="button" onclick="confirmSubmit()">Submit</button>
+  </form>
+
+  <script>
+    // Populate depots and vehicles
+    const depotVehicleData = {
+      Bandra: ["MH01 AB 1234"],
+      Khar: ["MH02 CD 5678"],
+      Andheri: ["MH04 GH 2345", "MH05 IJ 6789"],
+    };
+
+    function populateDepotDropdown() {
+      const depotDropdown = document.getElementById("depotNameDropdown");
+      for (const depot in depotVehicleData) {
+        const option = document.createElement("option");
+        option.value = depot;
+        option.textContent = depot;
+        depotDropdown.appendChild(option);
       }
-    </style>
-  </head>
-  <body>
-    <div class="title-container">
-      <h3>Daily Log Entry Form</h3>
-    </div>
-    <form id="logForm">
-      <label>Serial No:</label>
-      <input type="text" name="serialNo" readonly />
+    }
 
-      <label>Opening Date:</label>
-      <input
-        type="date"
-        name="openingDate"
-        required
-        onchange="populateWeekAndMonth()"
-      />
-
-      <label>Week:</label>
-      <input type="text" name="week" readonly />
-
-      <label>Month:</label>
-      <input type="text" name="month" readonly />
-
-      <label>Depot Name:</label>
-      <select name="depotName" id="depotNameDropdown" required>
-        <option value="">Select a Depot</option>
-        <!-- Add Depot Options Here -->
-      </select>
-
-      <label>Vehicle No:</label>
-      <select name="vehicleNo" id="vehicleDropdown" required>
-        <option value="">Select a Vehicle</option>
-        <!-- Add Vehicle Options Here -->
-      </select>
-
-      <label>Vehicle Reporting Time:</label>
-      <input type="time" name="reportingTime" required />
-
-      <label>ADBLUE / DEF Filled:</label>
-      <select
-        name="adblueDef"
-        onchange="toggleQuantityField(this, 'defLitresFilledQty')"
-      >
-        <option value="No" selected>No</option>
-        <option value="Yes">Yes</option>
-      </select>
-
-      <label>DEF Litres Filled Qty (L):</label>
-      <input
-        type="number"
-        name="defLitresFilledQty"
-        id="defLitresFilledQty"
-        disabled
-      />
-
-      <label>ENGINE OIL Filled:</label>
-      <select
-        name="engineOil"
-        onchange="toggleQuantityField(this, 'engineOilQty')"
-      >
-        <option value="No" selected>No</option>
-        <option value="Yes">Yes</option>
-      </select>
-
-      <label>ENGINE OIL Filled Qty (L):</label>
-      <input type="number" name="engineOilQty" id="engineOilQty" disabled />
-
-      <label>COOLANT Filled:</label>
-      <select name="coolant" onchange="toggleQuantityField(this, 'coolantQty')">
-        <option value="No" selected>No</option>
-        <option value="Yes">Yes</option>
-      </select>
-
-      <label>COOLANT Filled Qty (L):</label>
-      <input type="number" name="coolantQty" id="coolantQty" disabled />
-
-      <label>Closing Date:</label>
-      <input type="date" name="closingDate" required />
-
-      <label>Closing KM Reading:</label>
-      <input type="number" name="closingKMReading" readonly />
-
-      <label>No of KMs Ran:</label>
-      <input type="number" name="kmsRan" readonly />
-
-      <label>Photograph of Refill Qty (Y/N):</label>
-      <select name="refillPhoto">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-
-      <label>Driver / Depot Staff Name:</label>
-      <input type="text" name="driverName" required />
-
-      <label>Driver / Depot Staff Signature (Y/N):</label>
-      <select name="driverSignature">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-
-      <label>Gulf Operator / Staff Signature (Y/N):</label>
-      <select name="gulfSignature">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-
-      <button type="button" onsubmit="confirmSubmit()">Submit</button>
-    </form>
-
-    <script>
-      // Function to fetch the next Serial Number
-      function fetchSerialNo() {
-        google.script.run
-          .withSuccessHandler(function (serialNo) {
-            document.getElementsByName("serialNo")[0].value = serialNo;
-          })
-          .getNextSerialNo();
+    function updateVehicleDropdown(depot) {
+      const vehicleDropdown = document.getElementById("vehicleDropdown");
+      vehicleDropdown.innerHTML = '<option value="">Select a Vehicle</option>';
+      if (depotVehicleData[depot]) {
+        depotVehicleData[depot].forEach(vehicle => {
+          const option = document.createElement("option");
+          option.value = vehicle;
+          option.textContent = vehicle;
+          vehicleDropdown.appendChild(option);
+        });
       }
+    }
 
-      // Populate Week and Month based on Date
-      function populateWeekAndMonth() {
-        const dateField = document.getElementsByName("openingDate")[0].value;
-        const date = new Date(dateField);
+    function populateWeekAndMonth() {
+      const dateField = document.getElementsByName("openingDate")[0].value;
+      const date = new Date(dateField);
+      if (date) {
         const weekField = document.getElementsByName("week")[0];
         const monthField = document.getElementsByName("month")[0];
-
-        if (date) {
-          const weekNumber = Math.ceil(date.getDate() / 7); // Simple week calculation
-          const monthName = date.toLocaleString("default", { month: "long" });
-
-          weekField.value = `Week ${weekNumber}`;
-          monthField.value = monthName;
-        }
+        weekField.value = `Week ${Math.ceil(date.getDate() / 7)}`;
+        monthField.value = date.toLocaleString("default", { month: "long" });
       }
+    }
 
-      // Toggle quantity field based on the "Yes" or "No" selection for material type
-      function toggleQuantityField(selectElement, quantityFieldId) {
-        const quantityField = document.getElementById(quantityFieldId);
-        if (selectElement.value === "Yes") {
-          quantityField.disabled = false; // Enable the field if "Yes" is selected
-        } else {
-          quantityField.disabled = true; // Disable and clear the field if "No" is selected
-          quantityField.value = ""; // Clear the field when disabled
-        }
+    function toggleQuantityField(selectElement, quantityFieldId) {
+      const quantityField = document.getElementById(quantityFieldId);
+      if (selectElement.value === "Yes") {
+        quantityField.disabled = false;
+      } else {
+        quantityField.disabled = true;
+        quantityField.value = "";
       }
+    }
 
-      // Confirmation before submission
-      function confirmSubmit() {
-        if (confirm("Are you sure you want to submit?")) {
-          submitForm();
-        }
+    function confirmSubmit() {
+      if (confirm("Are you sure you want to submit?")) {
+        submitForm();
       }
+    }
 
-      // Submit form data to Apps Script
-      function submitForm() {
-        const form = document.getElementById("logForm");
-        const formData = new FormData(form);
-        google.script.run
-          .withSuccessHandler(() => {
-            alert("Data submitted successfully!");
-            form.reset(); // Reset form after submission
-            fetchSerialNo(); // Fetch next Serial No after submission
-          })
-          .addEntry(Object.fromEntries(formData));
-      }
+    function submitForm() {
+      const form = document.getElementById("logForm");
+      const formData = new FormData(form);
+      google.script.run.withSuccessHandler(() => {
+        alert("Data submitted successfully!");
+        form.reset();
+        fetchSerialNo();
+      }).addEntry(Object.fromEntries(formData));
+    }
 
-      // Fetch initial Serial Number when page loads
-      window.onload = fetchSerialNo;
-    </script>
-  </body>
-</html>
+    window.onload = () => {
+      populateDepotDropdown();
+    };
+  </
