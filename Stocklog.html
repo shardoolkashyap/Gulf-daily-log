@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f2f2f2;
+    }
+
+    form {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+
+    .title-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    h3 {
+      font-size: 2rem;
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .required::after {
+      content: "*";
+      color: red;
+      margin-left: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .error {
+      border: 2px solid red;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-container">
+    <h3>Daily Stock Entry Form</h3>
+  </div>
+  <form id="Stocklog" onsubmit="return validateForm(event)">
+    <label>Serial Number:</label>
+    <input type="text" name="serialNo" readonly />
+
+    <label>Date:</label>
+    <input type="date" name="Date" required onchange="populateWeekAndMonth()" />
+
+    <label>Week:</label>
+    <input type="text" name="week" readonly />
+
+    <label>Month:</label>
+    <input type="text" name="month" readonly />
+
+    <label class="required">Depot Name:</label>
+    <select name="depotName" required>
+      <option value="">Select a Depot</option>
+      <option value="Bandra">Bandra</option>
+      <!-- Add other depots here -->
+    </select>
+
+    <label class="required">GRN no:</label>
+    <input type="text" name="GRNno" required />
+
+    <label>ADBLUE / DEF :</label>
+    <select name="adblueDef" onchange="toggleQuantityField(this, 'DEFGRNQty')">
+      <option value="No" selected>No</option>
+      <option value="Yes">Yes</option>
+    </select>
+
+    <label>DEF GRN Qty (L):</label>
+    <input type="number" name="DEFGRNQty" id="DEFGRNQty" disabled />
+
+    <label>ENGINE OIL:</label>
+    <select name="engineOil" onchange="toggleQuantityField(this, 'ENGINEOILGRNQty')">
+      <option value="No" selected>No</option>
+      <option value="Yes">Yes</option>
+    </select>
+
+    <label>ENGINE OIL GRN Qty:</label>
+    <input type="number" name="ENGINEOILGRNQty" id="ENGINEOILGRNQty" disabled />
+
+    <label>COOLANT:</label>
+    <select name="coolant" onchange="toggleQuantityField(this, 'COOLANTGRNQty')">
+      <option value="No" selected>No</option>
+      <option value="Yes">Yes</option>
+    </select>
+
+    <label>COOLANT GRN Qty (L):</label>
+    <input type="number" name="COOLANTGRNQty" id="COOLANTGRNQty" disabled />
+
+    <label class="required">Physical Stock or Opening Stock:</label>
+    <input type="date" name="PhysicalStockorOpeningstock" required />
+
+    <label class="required">Total Stock after GRN Qty:</label>
+    <input type="number" name="TotalStockafterGRNQty" required />
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    function validateForm(event) {
+      let isValid = true;
+      const form = document.getElementById("Stocklog");
+
+      // Validate required fields
+      const requiredFields = form.querySelectorAll("[required]");
+      requiredFields.forEach((field) => {
+        field.classList.remove("error");
+        if (!field.value.trim()) {
+          field.classList.add("error");
+          isValid = false;
+        }
+      });
+
+      // Validate conditional material fields
+      const materials = [
+        { type: "adblueDef", qty: "DEFGRNQty" },
+        { type: "engineOil", qty: "ENGINEOILGRNQty" },
+        { type: "coolant", qty: "COOLANTGRNQty" },
+      ];
+
+      materials.forEach(({ type, qty }) => {
+        const typeField = form.querySelector(`[name="${type}"]`);
+        const qtyField = form.querySelector(`[name="${qty}"]`);
+        if (typeField.value === "Yes" && !qtyField.value.trim()) {
+          qtyField.classList.add("error");
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        alert("Please fill all required fields.");
+        event.preventDefault();
+      }
+
+      return isValid;
+    }
+
+    function toggleQuantityField(selectElement, quantityFieldId) {
+      const quantityField = document.getElementById(quantityFieldId);
+      if (selectElement.value === "Yes") {
+        quantityField.disabled = false;
+        quantityField.required = true;
+      } else {
+        quantityField.disabled = true;
+        quantityField.required = false;
+        quantityField.value = "";
+      }
+    }
+
+    function populateWeekAndMonth() {
+      const dateField = document.getElementsByName("Date")[0];
+      const weekField = document.getElementsByName("week")[0];
+      const monthField = document.getElementsByName("month")[0];
+
+      const date = new Date(dateField.value);
+      if (!isNaN(date)) {
+        weekField.value = `Week ${Math.ceil(date.getDate() / 7)}`;
+        monthField.value = date.toLocaleString("default", { month: "long" });
+      }
+    }
+  </script>
+</body>
+</html>
